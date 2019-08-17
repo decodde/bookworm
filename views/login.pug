@@ -1,0 +1,23 @@
+include top
+
+div.bg-dark(style="height:100%")
+    div.align-self-center(style="padding:40px;border-radius:5px;float:none;width:300px;margin:0 auto;")
+        h4.card.card-body Login
+            br
+            br
+            form.form(method="POST")
+                code#details
+                div.form-group
+                    input.form-control#user(type="text",placeholder="Username",required)
+                div.form-group
+                    input.form-control#pwd(type="password",placeholder="Password",required)
+                button.btn.btn-primary(type="submit") Login
+
+include bottom
+script(type="text/javascript").
+    $(".form").submit((event) =>{
+        event.preventDefault();
+        $.post("/login",{username:$('#user').val(),password:$('#pwd').val()},(r)=>{
+            (!r.value)? $('#details').text(r.string): window.location="/admin-dashboard"
+        })
+    });

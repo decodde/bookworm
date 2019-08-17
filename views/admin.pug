@@ -1,0 +1,116 @@
+include top
+
+header.navbar.navbar-expand.flex-column.flex-md-row.bg-dark
+    lead.text-light.navbar-brand.mr-0.mr-md-2(href="#") bookworm
+    ul.navbar-nav.flex-row.ml-md-auto.d-none.d-md-flex
+        li.nav-item.dropdown
+            a.nav-item.nav-link.dropdown-toggle.mr-md-2(href="#",id="options",data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") #{exdt.username}
+            div.dropdown-menu.dropdown-menu-right(aria-labelledby="options")
+                a.dropdown-item Logout
+.container-fluid
+    .row.flex-xl-nowrap
+        .card.card-body.col-sm-3.col-md-3.col-xl-2.bg-dark(style="margin-bottom:0px !important;border-radius:0px !important")
+            if exdt.role =="admin"
+                .dropdown
+                    a.btn.btn-info.dropdown-toggle#mudropdown(data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") Manage Users
+                    .dropdown-menu(aria-labelledby="mudropdown")
+                        a.dropdown-item.btn.btn-primary(data-toggle="collapse",data-target="#addusers",aria-expanded="false",aria-control="addusers") add users
+                            code   +
+                        a.dropdown-item.btn.btn-primary(onclick="gtusers()",data-toggle="collapse",data-target="#editusers",aria-expanded="false",aria-control="editusers") edit users
+                            code   +
+            br
+            .dropdown
+                    a.btn.btn-info.dropdown-toggle#mudropdown(data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") Manage Books
+                    .dropdown-menu(aria-labelledby="mbdropdown")
+                        a.dropdown-item.btn.btn-primary( data-toggle="collapse",data-target="#addbooks",aria-expanded="false",aria-control="addbooks") add books
+                            code   +
+                        a.dropdown-item.btn.btn-primary( data-toggle="collapse",data-target="#editbooks",aria-expanded="false",aria-control="editbooks") edit books
+                            code   +
+            
+        main.col-sm-9.col-md-9.col-xl-8.py-md-3.pl-md-5.bg-white(role="main")
+            .card.card-body#pt
+                .collapse#addusers(data-parent="#pt")
+                    lead.display-4 Add User
+                    form#useradd.card.card-body
+                        br
+                        .row
+                            .input-group.col-md-5
+                                input.form-control.user(type="text",placeholder="username")
+                            .input-group.col-md-5
+                                input.form-control.pwd(type="text",placeholder="password")
+                        br
+                        .row
+                            .form-group.col-md-6.row
+                                label.col-md-3.col-form-label(for="role") Role
+                                select.col-md-6.form-control#role
+                                    option admin
+                                    option publisher
+                                    option moderator
+                        br
+                        br
+                        .input-group.col-md-3
+                            input.btn.btn-info(type="submit",value="submit user") 
+                .collapse#editusers(data-parent="#pt")
+                    lead.display-4 Edit Users
+                    .fetchedusers
+                    form.modal.fade#editModal(novalidate,tabindex="1",role="dialog",aria-labelledby="modalLabel" aria-hidden="true")
+                        .modal-dialog(role="document")
+                            .modal-content
+                                .modal-header
+                                    h5.modal-title#modalLabel Edit User
+                                    button.close(type="button",data-dismiss="modal" aria-label="Close")
+                                        span(aria-hidden="true") &times;      
+                                .modal-body
+                                    #edituser.card.card-body(novalidate)
+                                        br
+                                        .row
+                                            .input-group.col-md-5
+                                                input.form-control.edituser(type="text",placeholder="username")
+                                            .input-group.col-md-5
+                                                input.form-control.editpwd(type="text",placeholder="password")
+                                        br
+                                        .row
+                                            .form-group.col-md-8.row
+                                                label.col-md-4.col-form-label(for="role") Role
+                                                select.col-md-7.form-control#editrole
+                                                    option admin
+                                                    option publisher
+                                                    option moderator
+                                .modal-footer
+                                    button.btn.btn-info(type="button",data-dismiss="modal") Cancel
+                                    button.btn.btn-info(type="submit") Save Changes
+                                    
+
+include bottom
+script(type="text/javascript").
+    $('#editModal').on('show.bs.modal',  (event)=> {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        console.log(button)
+        var usr = button.data('username') // Extract info from data-* attributes
+        var pwd = button.data('password')
+        var rl=button.data('role')
+        $('.modal-title').text('Edit ' + usr)
+        $('.edituser').val(usr)
+        $('.editpwd').val(pwd)
+        $('#editrole').val(rl)
+    })
+    $("#editModal").submit((e)=>{
+        var eu= $(".edituser").val()
+        var ep= $(".editpwd").val()
+        var er= $("#editrole").val()
+        e.preventDefault();
+        (eu!="")?$.post(`/updateprofile/${eu}/${ep}/${er}`,(r)=>console.log(r)):" "
+    })
+    $("#useradd").submit((e)=>{
+        e.preventDefault();
+        if($(".user").val()!=""&&$(".pwd").val()!=""){
+            $.post("/adduser",{username:$(".user").val(),password:$(".pwd").val(),role:$("#role").val()},(r)=>{
+                console.log(r)
+            })
+        }
+    })
+    gtusers=()=>{
+        $.get("/getusers",{},(r)=>{
+            r.forEach((o)=>$(".fetchedusers").append(`<div class="card card-body"><div class="row"><lead class="col-md-6">Username : ${o.username}</lead><lead class="col-md-6">Role : ${o.role}</lead></div><hr><button data-username="${o.username}" data-password="${o.password}" data-role="${o.role}" type="button" class="btn btn-outline-info right" data-toggle="modal" data-target="#editModal" >Edit </button></div>`))
+        })
+    }
