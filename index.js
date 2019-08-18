@@ -25,27 +25,50 @@ app.get("/",function(req,res){
     res.render("home",{settings:settings,exdt:extdt})
 })
 
-app.get("/logout",(req,res)=>{
-    if(req.session&&req.session.granted=="true"){
-        req.session.destroy() 
-        res.redirect("/")
-    }
-    else res.redirect("/")
+
+app.get("/register",(req,res)=>{
+    res.render("register")
 })
+app.post("/register",(req,res)=>{
+    const{displayName,lastname}=req.body
+    console.log(displayName," ! ",lastname)
+})
+/*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/
+app.get("/logout/:api",(req,res)=>{
+    if(req.session&&req.session.granted=="true"){
+        req.params.api=="api"?()=>{
+            req.session.destroy()
+            res.json({type:"success",data:"false",message:"Logout Successful"})
+        }:()=>{
+            req.session.destroy()
+            res.redirect("/")
+        }
+    }
+    else res.json({type:"error",data:"false",message:"Unable to Logout"})
+})
+
+
+app.post("/savebook/:token",(req,res)=>{
+    const{token,bookId}=req.params
+    (req.session&&req.session.granted=="true"&&db.checkToken(token))?db.savebook(req.body.data):{type:"error",message:"You are not permitted"}
+})
+app.get("/getbook/:token/:bookId",(req,res)=>{
+    const{token,bookId}=req.params
+    db.checkToken(token)?db.getbook(token,bookId):{type:"error",message:"You are not permitted"}
+})
+app.get("/serachboooks/:token/",(req,res)=>{
+
+})
+
+
 app.get("/login",function(req,res){
     res.render("login")
 })
-app.get("/setup-stage:stage",(req,res)=>{
-    var extdt={
-        role:req.session.role,
-        username:req.session.username
-    }
-    console.log(req.params.stage)
-    if(req.params.stage=="1")res.render("setup1",extdt)
-    if(req.params.stage=="2")res.render("setup2",extdt)
 
-})
-app.post("/login",function(req,res){
+app.post("/login",(req,res)=>{
+
+    res.json(db.login())
     fs.readFile(path.join(__dirname,"lib/users.json"),(err,data)=>{
         if(err) return console.error(err)
         data=JSON.parse(data)
@@ -81,6 +104,7 @@ app.post("/updateprofile/:user/:password/:role",(req,res)=>{
     var d=db.updateprofile(req.params.user,req.params.password,req.params.role)
     d?res.send("Updated Profile Successfully"):res.send("Error updating Profile")
 })
+
 app.get("/admin-dashboard",(req,res)=>{
     var settings=db.settings()
     var extdt={
@@ -89,8 +113,16 @@ app.get("/admin-dashboard",(req,res)=>{
     }
     req.session&&req.session.granted=="true"? res.render("admin",{exdt:extdt,settings:settings}):res.render("401")
 })
+/*dev*/
+app.listen(80,"127.168.10.15",(err)=>{
+    console.log(err)
+    console.log("_____________\n\\       __   \\\n \\     |__|   \\  \n  \\        ___/\n   \\    ____   \\\n    \\   \\___\\   \\\n     \\___________\\ookworm-js  \n    ##  server running  ##")
+})
+/** */
 
-app.listen(6700,(err)=>{
+/*prod*
+app.listen(process.env.PORT||6700,(err)=>{
     console.log(err)
     console.log("_____________\n\\       __   \\\n \\     |__|   \\  \n  \\        ___/\n   \\    ____   \\\n    \\   \\___\\   \\\n     \\___________\\ookworm-js  \n    ##  server running  ##")
 }) 
+/** */
