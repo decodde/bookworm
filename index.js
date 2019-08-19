@@ -30,8 +30,12 @@ app.get("/register",(req,res)=>{
     res.render("register")
 })
 app.post("/register",(req,res)=>{
-    const{displayName,lastname}=req.body
-    console.log(displayName," ! ",lastname)
+    var a=db.checkNameRules(req.body)
+    console.log(typeof a)
+    if(typeof a != "object"){
+        res.json(db.processRegister(req.body))
+    }
+    else res.json(a)
 })
 /*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/
@@ -57,7 +61,8 @@ app.get("/getbook/:token/:bookId",(req,res)=>{
     const{token,bookId}=req.params
     db.checkToken(token)?db.getbook(token,bookId):{type:"error",message:"You are not permitted"}
 })
-app.get("/serachboooks/:token/",(req,res)=>{
+
+app.get("/searchboooks/:token/",(req,res)=>{
 
 })
 

@@ -5,23 +5,46 @@ div.bg-dark(style="height:100%")
         h4.card.card-body Register
         .card
             .card-body
-                .form
+                form.form
                     .form-group
-                        input.form-control(required,type="text",placeholder="first Name")
+                        input.form-control(required,id="firstName",type="text",placeholder="firstname")
                     .form-group
-                        input.form-control(required,type="text",placeholder="last Name")
+                        input.form-control(required,id="lastName",type="text",placeholder="lastname")
                     .form-group
-                        input.form-control(required,type="text",placeholder="organization's name")
+                        input.form-control(required,id="organizationName",type="text",placeholder="organization's name")
                     .form-group
-                        input.form-control(required,type="text",placeholder="display name")
+                        input.form-control(required,id="mobileNumber",type="text",placeholder="mobile number")
                     .form-group
-                        input.form-control(required,type="text",placeholder="mobile number")
+                        input.form-control(required,id="emailAddress",type="email",placeholder="email address")
                     .form-group
-                        input.form-control(required,type="email",placeholder="email address")
-
-
-                    
-
+                        input.form-control(required,id="password",type="password",placeholder="password")
+                    .form-group
+                        input.form-control(required,id="Cpassword",type="password",placeholder="confirm password")
+                    br
+                    button.btn.btn-secondary.right(type="submit") Register
 
 
 include bottom
+script(type="text/javascript").
+    const checkPwd=()=>{
+        var r
+        ($("#password").val()==$("#Cpassword").val())?r=true:r=false
+        console.log("pwd not matching")
+        return r
+    }
+    $(".form").submit((e)=>{
+        var firstName=$("#firstName").val()
+        var lastName=$("#lastName").val()
+        var organizationName=$("#organizationName").val()
+        var mobileNumber=$("#mobileNumber").val()
+        var emailAddress=$("#emailAddress").val()
+        var password=$("#password").val()
+        e.preventDefault();
+        if(checkPwd()){
+            $.post("/register",{firstName:firstName,lastName:lastName,organizationName:organizationName,mobileNumber:mobileNumber,emailAddress:emailAddress,password:password},(r)=>{
+                console.log(r)
+            })
+        }
+        else ""
+        
+    });
