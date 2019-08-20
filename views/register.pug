@@ -31,7 +31,7 @@ script(type="text/javascript").
     const checkPwd=()=>{
         var r
         ($("#password").val()==$("#Cpassword").val())?r=true:r=false
-        
+
         return r
     }
     $(".form").submit((e)=>{
@@ -46,7 +46,7 @@ script(type="text/javascript").
         if(checkPwd()){
             $.post("/register",{username:username,firstName:firstName,lastName:lastName,organizationName:organizationName,mobileNumber:mobileNumber,emailAddress:emailAddress,password:password},(r)=>{
                 if(r.type=="success"){
-                    window.location="/dashboard"
+                    window.location="/verify"
                 }
                 else console.log(r)
             })
