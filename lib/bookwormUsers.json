@@ -7,6 +7,15 @@
 		"organizationName": "Genius Creation",
 		"mobileNumber": "08149696484",
 		"password": "polly",
-		"apps": []
+		"apps": [
+            {
+                "appname":"test",
+                "appBoken":"YFD9dsSFJS9w02PDCHWiwuehcb567681"
+            },
+            {
+                "appname":"earthspace",
+                "appBoken":"PDFOHncwc45w458@Wiwuehcb567681"
+            }
+        ]
 	}
 ]
