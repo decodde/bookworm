@@ -1,6 +1,6 @@
 include top
 
-div.bg-dark(style="height:100%")
+div.bg-info(style="height:100%")
     div.align-self-center(style="padding:40px;border-radius:5px;float:none;width:300px;margin:0 auto;")
         h4.card.card-body Login
             br
@@ -18,6 +18,8 @@ script(type="text/javascript").
     $(".form").submit((event) =>{
         event.preventDefault();
         $.post("/login",{username:$('#user').val(),password:$('#pwd').val()},(r)=>{
-            (!r.value)? $('#details').text(r.string): window.location="/dashboard"
+            console.log(r)
+            r.type=="success"? window.location="/dashboard" : $('#details').text(r.message)
+
         })
     });
