@@ -54,7 +54,11 @@ app.post("/login",(req,res)=>{
     
     else res.json({type:"error",message:"Invalid login details"})
 })
-
+app.post("/createApp/:appname",(req,res)=>{
+    var a=db.addApp(req.params.appname)
+    if(typeof a=="object")res.json(a)
+    else res.json({type:"error",message:"Appname already in use"})
+})
 /*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/
 app.get("/logout/:api",(req,res)=>{
