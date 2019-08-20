@@ -1,0 +1,54 @@
+include top
+
+header.navbar.navbar-expand.flex-column.flex-md-row.bg-dark
+    lead.text-light.navbar-brand.mr-0.mr-md-2(href="#") bookworm
+    ul.navbar-nav.flex-row.ml-md-auto.d-none.d-md-flex
+        li.nav-item.dropdown
+            a.nav-item.nav-link.dropdown-toggle.mr-md-2(href="#",id="options",data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") #{exdt.username}
+            div.dropdown-menu.dropdown-menu-right(aria-labelledby="options")
+                a.dropdown-item(onclick="logout()") Logout
+.container-fluid
+    .row.flex-xl-nowrap
+        .card.card-body.col-sm-3.col-md-3.col-xl-2.bg-dark(style="margin-bottom:0px !important;border-radius:0px !important")
+            if exdt.role =="admin"
+                .dropdown
+                    a.btn.btn-info.dropdown-toggle#mudropdown(data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") Manage Users
+                    .dropdown-menu(aria-labelledby="mudropdown")
+                        a.dropdown-item.btn.btn-primary(data-toggle="collapse",data-target="#addusers",aria-expanded="false",aria-control="addusers") add users
+                            code   +
+                        a.dropdown-item.btn.btn-primary(onclick="gtusers()",data-toggle="collapse",data-target="#editusers",aria-expanded="false",aria-control="editusers") edit users
+                            code   +
+            br
+            .dropdown
+                    a.btn.btn-info.dropdown-toggle#mudropdown(data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") Manage Books
+                    .dropdown-menu(aria-labelledby="mbdropdown")
+                        a.dropdown-item.btn.btn-primary( data-toggle="collapse",data-target="#addbooks",aria-expanded="false",aria-control="addbooks") add books
+                            code   +
+                        a.dropdown-item.btn.btn-primary( data-toggle="collapse",data-target="#editbooks",aria-expanded="false",aria-control="editbooks") edit books
+                            code   +
+            
+        main.col-sm-9.col-md-9.col-xl-8.py-md-3.pl-md-5.bg-white(role="main")
+            .card.card-body#pt
+                .collapse#addusers(data-parent="#pt")
+                    lead.display-4 Add User
+                    form#useradd.card.card-body
+                        br
+                        .row
+                            .input-group.col-md-5
+                                input.form-control.user(type="text",placeholder="username")
+                            .input-group.col-md-5
+                                input.form-control.pwd(type="text",placeholder="password")
+                        br
+                        .row
+                            .form-group.col-md-6.row
+                                label.col-md-3.col-form-label(for="role") Role
+                                select.col-md-6.form-control#role
+                                    option admin
+                                    option publisher
+                                    option moderator
+                        br
+                        br
+                        .input-group.col-md-3
+                            input.btn.btn-info(type="submit",value="submit user")
+
+include bottom
