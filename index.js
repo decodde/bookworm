@@ -38,7 +38,7 @@ app.post("/register",(req,res)=>{
     else res.json(a)
 })
 app.get("/dashboard",(req,res)=>{
-    res.render("dashboard",req.session.username)
+    req.session.username?res.render("dashboard",{username:req.session.username,apps:db.getUserApps(req.session.username)}): res.render("dashboard")
 })
 app.get("/login",function(req,res){
     res.render("login")
