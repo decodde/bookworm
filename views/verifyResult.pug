@@ -1,0 +1,17 @@
+include top
+
+
+header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
+    lead.text-light.navbar-brand.mr-0.mr-md-2(href="#") bookworm
+
+
+.container-fluid
+    if type=="success"
+        lead Your account has been activated successfully please 
+            a(href="/login")|login to start adding to your bookshelves
+    else if a.type=="error"
+        lead #{a.message}
+    else
+        lead A verfication email has been sent to the specified email address. Check you inbox, click the link specified to verify your account 
+
+include bottom
