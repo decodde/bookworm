@@ -71,7 +71,7 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                                         div.form-group
                                             input.form-control#appname(type="text",placeholder="appname",required)
                                         div.form-group
-                                            input.form-control#pwd(disabled,type="text",placeholder="app boken",required)
+                                            input.form-control#appboken(disabled,type="text",placeholder="app boken",required)
                                 .modal-footer
                                     button.btn.btn-secondary(type="button",data-dismiss="modal") Cancel
                                     button.btn.btn-primary(type="button",onclick="tryAdd()") Add
@@ -83,22 +83,22 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                         
 
 include bottom
-
-script(type="text/javascript").
-    var tryAdd=()=>{
-        $.post(`/checkAppName/${$("#appname").val()}`,{},(r)=>{
-            if(r.type=="success") {
-                alertSimple(r.message,3000)
-                
-            }
-            else if(r.type=="error") alertSimple(r.message,3000)
-        })
-    }
-    
-    alertSimple=(mesg,time)=>{
-            $("#alert .modal-body .mesg").text(mesg)
-            $('#alert').modal('show')
-        setTimeout(()=>{
-             $('#alert').modal('hide')
-        },time)
-    }
+if username
+    script(type="text/javascript").
+        var tryAdd=()=>{
+            $.post(`/checkAppName/${$("#appname").val()}`,{},(r)=>{
+                if(r.type=="success") {
+                    alertSimple(r.message,3000)
+                    $("#appboken").val(r.appBoken)
+                }
+                else if(r.type=="error") alertSimple(r.message,3000)
+            })
+        }
+        
+        alertSimple=(mesg,time)=>{
+                $("#alert .modal-body .mesg").text(mesg)
+                $('#alert').modal('show')
+            setTimeout(()=>{
+                $('#alert').modal('hide')
+            },time)
+        }
