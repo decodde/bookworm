@@ -9,7 +9,7 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
     if type=="success"
         lead Your account has been activated successfully please 
             a(href="/login")|login to start adding to your bookshelves
-    else if a.type=="error"
+    else if type=="error"
         lead #{a.message}
     else
         lead A verfication email has been sent to the specified email address. Check your inbox, click the link specified to verify your account 

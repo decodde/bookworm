@@ -62,7 +62,7 @@ app.post("/createApp/:appname",(req,res)=>{
 /*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/
 app.get("/verify",(req,res)=>{
-    res.render("verifyResult")
+    res.render("verifyResult",{type:"null"})
 })
 app.get("/verify/:name/:verifyLink",(req,res)=>{
     var a=db.verify(req.params.name,req.params.verifyLink)
