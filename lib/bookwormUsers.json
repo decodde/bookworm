@@ -1,17 +1,3 @@
 [
-	{
-		"username": "dannyoma75",
-		"firstName": "Fasina",
-		"lastName": "Oreoluwa",
-		"emailAddress": "dannyoma75@gmail.com",
-		"organizationName": "Genius Creation",
-		"mobileNumber": "08149696484",
-		"password": "polly",
-		"apps": [
-            {
-                "appname":"test",
-                "appBoken":"YFD9dsSFJS9w02PDCHWiwuehcb567681"
-            }
-        ]
-	}
+	
 ]
