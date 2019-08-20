@@ -37,6 +37,24 @@ app.post("/register",(req,res)=>{
     }
     else res.json(a)
 })
+app.get("/dashboard",(req,res)=>{
+    res.render("dashboard",req.session.username)
+})
+app.get("/login",function(req,res){
+    res.render("login")
+})
+
+app.post("/login",(req,res)=>{
+    const checkLogin=db.login("normal",req)
+    if(checkLogin){
+        req.session.username=req.body.username
+        req.session.granted="true"
+        res.json({type:"success",value:true})
+    }
+    
+    else res.json({type:"error",message:"Invalid login details"})
+})
+
 /*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/
 app.get("/logout/:api",(req,res)=>{
@@ -67,30 +85,6 @@ app.get("/searchboooks/:token/",(req,res)=>{
 })
 
 
-app.get("/login",function(req,res){
-    res.render("login")
-})
-
-app.post("/login",(req,res)=>{
-
-    res.json(db.login())
-    fs.readFile(path.join(__dirname,"lib/users.json"),(err,data)=>{
-        if(err) return console.error(err)
-        data=JSON.parse(data)
-        var ind=data.findIndex(o=>o.username==req.body.username)
-        if(ind!=-1) {
-            if(data[ind].password==req.body.password) 
-            {
-                req.session.role=data[ind].role
-                req.session.username=req.body.username
-                req.session.granted="true"
-                res.send({string:"success",value:true})
-            } 
-            else res.send({string:"failed",value:false})
-        }
-        else res.send({string:"failed",value:false})
-    })
-})
 
 app.get("/getusers",(req,res)=>{
     var dtusers=db.getusers()
