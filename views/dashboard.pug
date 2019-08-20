@@ -1,5 +1,13 @@
 include top
-
+style(rel="stylesheet").
+    .modal#alert{
+        position:absolute !important;
+        float:right;
+        width:300px;
+        height:68px;
+        top:0px;
+        left:700px !important;
+    }
 header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
     lead.text-light.navbar-brand.mr-0.mr-md-2(href="#") bookworm
     ul.navbar-nav.flex-row.ml-md-auto.d-none.d-md-flex
@@ -44,11 +52,53 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                                         span.col-md-3
                                             lead Delete
                                     hr
-
                                     for app in apps
                                         .row.card-body
                                             span.col-md-3 #{app.appname}
                                             span.col-md-5 #{app.appBoken}
-                            
+                                    button.btn.btn-primary(type="button",data-toggle="modal",data-target="#addApp") New App
+
+                    div.modal.fade#addApp(tabindex="-1",role="dialog",aria-labelledby="addAppLabel",aria-hidden="true")
+                        div.modal-dialog(role="document")
+                            div.modal-content
+                                div.modal-header
+                                    h5.modal-title#addAppLabel New App
+                                    button.close(type="button",data-dismiss="modal",aria-label="Close")
+                                        span(aria-hidden="true") &times;
+                                .modal-body
+                                    form.addapp
+                                        p#details
+                                        div.form-group
+                                            input.form-control#appname(type="text",placeholder="appname",required)
+                                        div.form-group
+                                            input.form-control#pwd(disabled,type="text",placeholder="app boken",required)
+                                .modal-footer
+                                    button.btn.btn-secondary(type="button",data-dismiss="modal") Cancel
+                                    button.btn.btn-primary(type="button",onclick="alertSimple('pollyTest',3000)") Add
+                    div.modal#alert        
+                        .modal-body.bg-dark
+                            span
+                                button.btn.text-white(style="float:right;background:transparent",data-dismiss="modal",aria-label="Close",aria-hidden="true") X
+                            span.text-white.mesg Text
+                        
 
 include bottom
+
+script(type="text/javascript").
+    var tryAdd=()=>{
+        $.post(`/checkAppName/${$("#appname").val()}`,{},(r)=>{
+            if(r.type=="success") {
+                alertSimple(r.message,3000)
+                
+            }
+            else if(r.type=="error") alertSimple(r.message,3000)
+        })
+    }
+    
+    alertSimple=(mesg,time)=>{
+            $("#alert .modal-body .mesg").text(mesg)
+            $('#alert').modal('show')
+        setTimeout(()=>{
+             $('#alert').modal('hide')
+        },time)
+    }
