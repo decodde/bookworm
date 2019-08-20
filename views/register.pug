@@ -7,6 +7,8 @@ div.bg-dark(style="height:100%")
             .card-body
                 form.form
                     .form-group
+                        input.form-control(required,id="username",type="text",placeholder="username")
+                    .form-group
                         input.form-control(required,id="firstName",type="text",placeholder="firstname")
                     .form-group
                         input.form-control(required,id="lastName",type="text",placeholder="lastname")
@@ -33,6 +35,7 @@ script(type="text/javascript").
         return r
     }
     $(".form").submit((e)=>{
+        var username=$("#username").val()
         var firstName=$("#firstName").val()
         var lastName=$("#lastName").val()
         var organizationName=$("#organizationName").val()
@@ -41,8 +44,11 @@ script(type="text/javascript").
         var password=$("#password").val()
         e.preventDefault();
         if(checkPwd()){
-            $.post("/register",{firstName:firstName,lastName:lastName,organizationName:organizationName,mobileNumber:mobileNumber,emailAddress:emailAddress,password:password},(r)=>{
-                console.log(r)
+            $.post("/register",{username:username,firstName:firstName,lastName:lastName,organizationName:organizationName,mobileNumber:mobileNumber,emailAddress:emailAddress,password:password},(r)=>{
+                if(r.type=="success"){
+                    window.location="/dashboard"
+                }
+                else console.log(r)
             })
         }
         else ""
