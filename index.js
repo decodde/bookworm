@@ -62,11 +62,11 @@ app.post("/createApp/:appname",(req,res)=>{
 /*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/
 app.get("/verify",(req,res)=>{
-    res.render(verifyResult)
+    res.render("verifyResult")
 })
 app.get("/verify/:name/:verifyLink",(req,res)=>{
     var a=db.verify(req.params.name,req.params.verifyLink)
-    res.render(verifyResult,a)
+    res.render("verifyResult",a)
 })
 app.get("/logout/:api",(req,res)=>{
     if(req.session&&req.session.granted=="true"){
