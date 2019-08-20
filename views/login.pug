@@ -18,6 +18,6 @@ script(type="text/javascript").
     $(".form").submit((event) =>{
         event.preventDefault();
         $.post("/login",{username:$('#user').val(),password:$('#pwd').val()},(r)=>{
-            (!r.value)? $('#details').text(r.string): window.location="/admin-dashboard"
+            (!r.value)? $('#details').text(r.string): window.location="/dashboard"
         })
     });
