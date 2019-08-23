@@ -22,7 +22,7 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
         .row.flex-xl-nowrap
             .card.card-body.col-sm-3.col-md-3.col-xl-2.bg-transparent(style="margin-bottom:0px !important;border-radius:0px !important")
                 .dropdown
-                    a.btn.btn-light(onclick="getmyapps()",data-toggle="collapse",data-target="#apps",aria-expanded="false",aria-control="apps") Apps
+                    a.btn.btn-light(data-toggle="collapse",data-target="#apps",aria-expanded="false",aria-control="apps") Apps
                     
                 br
                 .dropdown
@@ -43,6 +43,7 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                             .card-body.bg-info
                                 if apps.length<1
                                     h5.center No apps created yet
+                                    button.btn.btn-primary(type="button",data-toggle="modal",data-target="#addApp") New App
                                 else
                                     .row
                                         span.col-md-3
@@ -86,19 +87,14 @@ include bottom
 if username
     script(type="text/javascript").
         var tryAdd=()=>{
-            $.post(`/checkAppName/${$("#appname").val()}`,{},(r)=>{
+            $.post(`/createApp/${$("#appname").val()}`,{},(r)=>{
                 if(r.type=="success") {
-                    alertSimple(r.message,3000)
+                    
                     $("#appboken").val(r.appBoken)
+                    noty("top","right",r.message,2000,"success")
                 }
-                else if(r.type=="error") alertSimple(r.message,3000)
+                else if(r.type=="error") noty("top","right",r.message,2000,"success")
             })
         }
         
-        alertSimple=(mesg,time)=>{
-                $("#alert .modal-body .mesg").text(mesg)
-                $('#alert').modal('show')
-            setTimeout(()=>{
-                $('#alert').modal('hide')
-            },time)
-        }
+        
