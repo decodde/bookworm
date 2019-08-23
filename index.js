@@ -48,7 +48,7 @@ app.post("/login",(req,res)=>{
     const checkLogin=db.login("normal",req)
     if(checkLogin){
         req.session.username=req.body.username
-        req.session.granted="true"
+        req.session.granted=true
         res.json({type:"success",value:true})
     }
     
@@ -63,21 +63,16 @@ app.post("/createApp/:appname",(req,res)=>{
 /*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/
 app.get("/verify",(req,res)=>{
-    res.render("verifyResult",{type:"null"})
+    req.session.granted?res.redirect("/dashboard"):res.render("verifyResult",{type:"null"})
 })
 app.get("/verify/:name/:verifyLink",(req,res)=>{
     var a=db.verify(req.params.name,req.params.verifyLink)
-    res.render("verifyResult",a)
+    req.session.granted?res.redirect("/dashboard"):res.render("verifyResult",a)
 })
-app.get("/logout/:api",(req,res)=>{
-    if(req.session&&req.session.granted=="true"){
-        req.params.api=="api"?()=>{
-            req.session.destroy()
-            res.json({type:"success",data:"false",message:"Logout Successful"})
-        }:()=>{
+app.get("/logout",(req,res)=>{
+    if(req.session&&req.session.granted){
             req.session.destroy()
             res.redirect("/")
-        }
     }
     else res.json({type:"error",data:"false",message:"Unable to Logout"})
 })
@@ -85,7 +80,7 @@ app.get("/logout/:api",(req,res)=>{
 
 app.post("/savebook/:token",(req,res)=>{
     const{token,bookId}=req.params
-    (req.session&&req.session.granted=="true"&&db.checkToken(token))?db.savebook(req.body.data):{type:"error",message:"You are not permitted"}
+    (req.session&&req.session.granted&&db.checkToken(token))?db.savebook(req.body.data):{type:"error",message:"You are not permitted"}
 })
 app.get("/getbook/:token/:bookId",(req,res)=>{
     const{token,bookId}=req.params
@@ -100,11 +95,11 @@ app.get("/searchboooks/:token/",(req,res)=>{
 
 app.get("/getusers",(req,res)=>{
     var dtusers=db.getusers()
-    req.session&&req.session.granted=="true"&&req.session.role=="admin"?res.json(dtusers):res.send("You are not authorized")
+    req.session&&req.session.granted&&req.session.role=="admin"?res.json(dtusers):res.send("You are not authorized")
 })
 
 app.post("/adduser",(req,res)=>{
-    if(req.session&&req.session.granted=="true"&&req.session.role=="admin"){
+    if(req.session&&req.session.granted&&req.session.role=="admin"){
         var d=db.adduser(req.body.username,req.body.password,req.body.role)
         res.send(d)
     }
@@ -122,7 +117,7 @@ app.get("/admin-dashboard",(req,res)=>{
         role:req.session.role,
         username:req.session.username
     }
-    req.session&&req.session.granted=="true"? res.render("admin",{exdt:extdt,settings:settings}):res.render("401")
+    req.session&&req.session.granted? res.render("admin",{exdt:extdt,settings:settings}):res.render("401")
 })
 /*dev*/
 app.listen(3000,(err)=>{
