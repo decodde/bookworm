@@ -55,7 +55,8 @@ app.post("/login",(req,res)=>{
     else res.json({type:"error",message:"Invalid login details"})
 })
 app.post("/createApp/:appname",(req,res)=>{
-    var a=db.addApp(req.params.appname)
+
+    var a=db.addApp({appName:req.params.appname,username:req.session.username})
     if(typeof a=="object")res.json(a)
     else res.json({type:"error",message:"Appname already in use"})
 })
@@ -123,14 +124,14 @@ app.get("/admin-dashboard",(req,res)=>{
     }
     req.session&&req.session.granted=="true"? res.render("admin",{exdt:extdt,settings:settings}):res.render("401")
 })
-/*dev*
-app.listen(80,"127.168.10.15",(err)=>{
+/*dev*/
+app.listen(3000,(err)=>{
     console.log(err)
     console.log("_____________\n\\       __   \\\n \\     |__|   \\  \n  \\        ___/\n   \\    ____   \\\n    \\   \\___\\   \\\n     \\___________\\ookworm-js  \n    ##  server running  ##")
 })
 /** */
 
-/*prod*/
+/*prod*
 app.listen(process.env.PORT||6700,(err)=>{
     console.log(err)
     console.log("_____________\n\\       __   \\\n \\     |__|   \\  \n  \\        ___/\n   \\    ____   \\\n    \\   \\___\\   \\\n     \\___________\\ookworm-js  \n    ##  server running  ##")
