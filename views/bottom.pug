@@ -1,3 +1,19 @@
 script(src="./js/jquery.min.js")
 script(src="./js/popper.min.js")
 script(src="./js/bootstrap.js")
+script(src="./js/bootstrap-notify.js")
+script(type="text/javascript").
+    function noty(from, align,msg,time,type){
+        $.notify({
+            icon: "add_alert",
+            message: msg
+
+        },{
+            type: type,
+            timer: time,
+            placement: {
+                from: from,
+                align: align
+            }
+        });
+    };
