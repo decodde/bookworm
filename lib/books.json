@@ -3,7 +3,17 @@
 		"appname": "trapdoor",
 		"appBoken": "7bc1dd9c82eeeb8bea2205|a57578d0c034cc56c97c1e3ad13bc45c|04ceb6bbaf7febd07066dc7e75d87f6e45c39f29eb3794d250e18aac1244d987",
 		"createdBy": "bob",
-		"books": []
+		"books": [
+			{
+				"author":"Fasina Oreoluwa",
+				"doi":"8954ygm0uwt08thcntp9j3tgf",
+				"directLink":"",
+				"journal":"Harvard Science Journal",
+				"publisher":"Puffin Books",
+				"title":"Scientfic Methods to Train Your Dragon",
+				"publicationYear":"2020"
+			}
+		]
 	},
 	{
 		"appname": "earthspace",

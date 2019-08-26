@@ -1,0 +1,91 @@
+include top
+
+
+header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
+    lead.text-light.navbar-brand.mr-0.mr-md-2(href="#") bookworm
+    ul.navbar-nav.flex-row.ml-md-auto.d-none.d-md-flex
+        li.nav-item.dropdown
+            a.nav-item.nav-link.dropdown-toggle.mr-md-2(href="#",id="options",data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") #{username}
+            div.dropdown-menu.dropdown-menu-right(aria-labelledby="options")
+                a.dropdown-item(href="/dashboard") Return to Main Dashboard
+    
+- var c
+.container-fluid
+    if type=="success"
+        .row.flex-xl-nowrap
+            .card.card-body.col-sm-3.col-md-3.col-xl-2.bg-transparent(style="margin-bottom:0px !important;border-radius:0px !important")
+                .dropdown
+                    a.btn.btn-light(data-toggle="collapse",data-target="#mgbooks",aria-expanded="false",aria-control="mgbooks") Manage Books
+                    
+                
+            main.col-sm-9.col-md-9.col-xl-8.py-md-3.pl-md-5.bg-white(role="main")
+                .card.card-body.bg-white#pt
+                    .collapse.show#mgbooks(data-parent="#pt")
+                        lead.display-4 Manage Books
+                        br
+                        br
+                        .card
+                            .card-body.border.border-info.rounded
+                                if data.books.length<1
+                                    h5.center No books added yet
+                                    button.btn.btn-primary(type="button",data-toggle="modal",data-target="#addBook") New Book
+                                else
+                                    -   var color=["primary","warning","success","danger","info","primary"]
+                                    for book in data.books
+                                        -   var x=Math.floor(6-(6-0)*Math.random())
+                                        -   var y=color[x]
+                                        div
+                                            p.lead.display-4 #{book.title}
+                                            p.lead Author: #{book.author}
+                                            p.lead Year of Publication: #{book.publicationYear}
+                                            if book.directLink
+                                                span.lead Direct Link: 
+                                                a.lead(href=`${book.directLink}`) #{book.directLink}
+                                            if book.journal
+                                                p.lead Journal: #{book.journal}
+                                            if book.doi
+                                                p
+                                                    span.lead DOI: 
+                                                    a.lead(href=`${book.doi}`) #{book.doi}
+                                            if book.publisher
+                                                p.lead Published by: #{book.publisher}
+                                        hr
+                                        br
+                                    button.btn.btn-primary(type="button",data-toggle="modal",data-target="#addBook") New Book
+
+                    div.modal.fade#addBook(tabindex="-1",role="dialog",aria-labelledby="addBookLabel",aria-hidden="true")
+                        div.modal-dialog(role="document")
+                            div.modal-content
+                                div.modal-header
+                                    h5.modal-title#addBookLabel New Book
+                                    button.close(type="button",data-dismiss="modal",aria-label="Close")
+                                        span(aria-hidden="true") &times;
+                                .modal-body
+                                    form.addbook
+                                        p#details
+                                        div.form-group
+                                            input.form-control#appname(type="text",placeholder="appname",required)
+                                        div.form-group
+                                            input.form-control#appboken(disabled,type="text",placeholder="app boken",required)
+                                .modal-footer
+                                    button.btn.btn-secondary(type="button",data-dismiss="modal") Cancel
+                                    button.btn.btn-primary(type="button",onclick="tryAdd()") Add
+    else if type=="error"
+        .card
+            .card-body
+                .jumbotron
+                    p.lead #{message}               
+                        
+include bottom
+script(type="text/javascript").
+    var tryAdd=()=>{
+        $.post(`/createApp/${$("#appname").val()}`,{},(r)=>{
+            if(r.type=="success") {
+                $("#appboken").val(r.appBoken)
+                noty("top","right",r.message,2000,"success")
+            }
+            else if(r.type=="error") noty("top","right",r.message,2000,"success")
+        })
+    }
+        
+        
