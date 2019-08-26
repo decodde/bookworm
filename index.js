@@ -5,7 +5,7 @@ var path=require("path")
 var db=require("./lib/dbprocess")
 var session=require('express-session')
 app.use(require('body-parser')());
-app.use(express.static(__dirname+"/views"))
+app.use(express.static(__dirname+"/public"))
 app.set('views',__dirname+"/views")
 app.set('view engine',  'pug');
 app.use(session({
@@ -59,6 +59,33 @@ app.post("/createApp/:appname",(req,res)=>{
     var a=db.addApp({appName:req.params.appname,username:req.session.username})
     if(typeof a=="object")res.json(a)
     else res.json({type:"error",message:"Appname already in use"})
+})
+
+//@TODO ---> 
+/** */
+app.get("/appdashboard:app",(req,res)=>{
+    var app=req.params.app.split(":")
+    var [appName,bokenID]=app
+    console.log(appName,bokenID)
+    if(req.session.granted){
+        if(db.checkAppExists(appName)){
+            //console.log(db.checkOwner(appName))
+            if(req.session.username==db.checkOwner(appName).owner){
+                if(db.checkBokenPart(appName,bokenID)){
+                    res.render("dash",db.getApp(appName))
+                }
+            }
+            else res.render("dash",{type:"error",message:"You have no access to the app"})
+        }
+        else res.render("dash",{type:"error",message:"App does not exist"})
+      
+    }
+    else res.render("dash",{type:"error",message:"You are unauthorized to access this page"})
+})
+/**/
+app.get("/test:the",(req,res)=>{
+    console.log(req.params.the)
+    res.json(db.getApp("trapdoor"))
 })
 /*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/
