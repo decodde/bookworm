@@ -12,6 +12,8 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
 - var c
 .container-fluid
     if type=="success"
+        input#appname(hidden,type="text",value=`${data.appname}`) 
+        input#appBoken(hidden,type="text",value=`${data.appBoken}`) 
         .row.flex-xl-nowrap
             .card.card-body.col-sm-3.col-md-3.col-xl-2.bg-transparent(style="margin-bottom:0px !important;border-radius:0px !important")
                 .dropdown
@@ -34,26 +36,18 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                                     for book in data.books
                                         -   var x=Math.floor(6-(6-0)*Math.random())
                                         -   var y=color[x]
-                                        div
+                                        div(id=`${book.bookId}`)
                                             p.lead.display-4 #{book.title}
-                                            p.lead Author: #{book.author}
-                                            p.lead Year of Publication: #{book.publicationYear}
-                                            if book.directLink
-                                                span.lead Direct Link: 
-                                                a.lead(href=`${book.directLink}`) #{book.directLink}
-                                            if book.journal
-                                                p.lead Journal: #{book.journal}
-                                            if book.doi
-                                                p
-                                                    span.lead DOI: 
-                                                    a.lead(href=`${book.doi}`) #{book.doi}
-                                            if book.publisher
-                                                p.lead Published by: #{book.publisher}
+                                            p.text-left.lead Author: #{book.author}
+                                            p.text-left.lead Year of Publication: #{book.publicationYear}
+                                            a.text-right.btn-right.btn.btn-primary(tabindex="0",role="button",data-delay="200",data-toggle="popover",data-trigger="focus",data-html="true",data-content=`<span class="lead"> Direct Link: </span><a class="lead" href="${book.directLink}"> ${book.directLink}</a><p class="lead"> Journal: ${book.journal}</p><p><span class="lead"> DOI:</span><a class="lead" href="${book.doi}"> ${book.doi}</a></p><p class="lead"> Published by: ${book.publisher}</p>`) More
+                                            span
+                                                a.btn.btn-success.text-left(onclick=`edit()`) Edit
                                         hr
                                         br
                                     button.btn.btn-primary(type="button",data-toggle="modal",data-target="#addBook") New Book
 
-                    div.modal.fade#addBook(tabindex="-1",role="dialog",aria-labelledby="addBookLabel",aria-hidden="true")
+                    form.modal.fade#addBook(tabindex="-1",role="dialog",aria-labelledby="addBookLabel",aria-hidden="true")
                         div.modal-dialog(role="document")
                             div.modal-content
                                 div.modal-header
@@ -61,15 +55,29 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                                     button.close(type="button",data-dismiss="modal",aria-label="Close")
                                         span(aria-hidden="true") &times;
                                 .modal-body
-                                    form.addbook
-                                        p#details
+                                    div
                                         div.form-group
-                                            input.form-control#appname(type="text",placeholder="appname",required)
+                                            input.form-control#bookId(disabled,type="text",placeholder="bookId (auto-generated)",required)
                                         div.form-group
-                                            input.form-control#appboken(disabled,type="text",placeholder="app boken",required)
+                                            input.form-control#title(type="text",placeholder="title of book",required)
+                                        div.form-group
+                                            input.form-control#author(type="text",placeholder="book author(s)",required)
+                                        div.form-group
+                                            input.form-control#journal(type="text",placeholder="journal",required)
+                                        div.form-group
+                                            input.form-control#doi(type="text",placeholder="DOI (if any)")
+                                        div.form-group
+                                            input.form-control#directLink(type="text",placeholder="Direct Link (if any)")
+                                        div.form-group
+                                            input.form-control#publisher(type="text",placeholder="Publisher(s)",required)
+                                        div.form-group
+                                            input.form-control#publicationYear(type="text",placeholder="Publication Year",required)
+                                        div.form-group
+                                            textarea.form-control#abstract(type="text",cols="30",rows="10",placeholder="Abstract",required)
+                                        
                                 .modal-footer
-                                    button.btn.btn-secondary(type="button",data-dismiss="modal") Cancel
-                                    button.btn.btn-primary(type="button",onclick="tryAdd()") Add
+                                    button.btn.btn-secondary(type="cancel",data-dismiss="modal") Cancel
+                                    button.btn.btn-primary(type="submit") Add Book
     else if type=="error"
         .card
             .card-body
@@ -78,14 +86,30 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                         
 include bottom
 script(type="text/javascript").
-    var tryAdd=()=>{
-        $.post(`/createApp/${$("#appname").val()}`,{},(r)=>{
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
+    $("#addBook").submit((e)=>{
+        e.preventDefault()
+        var author=$("#author").val()
+        var doi=$("#doi").val()
+        var directLink=$("#directLink").val()
+        var journal=$("#journal").val()
+        var publisher=$("#publisher").val()
+        var title=$("#title").val()
+        var publicationYear=$("#publicationYear").val()
+        var abstract=$("#abstract").val()
+
+        $.post(`/addBook/${$("#appname").val()}/${$("#appBoken").val()}`,{author:author,doi:doi,directLink:directLink,journal:journal,publisher:publisher,title:title,publicationYear:publicationYear,abstract:abstract},(r)=>{
             if(r.type=="success") {
-                $("#appboken").val(r.appBoken)
+                $("#bookId").val(r.bookId)
                 noty("top","right",r.message,2000,"success")
+                setTimeout(()=>{
+                    window.location.reload()
+                },2000)
             }
             else if(r.type=="error") noty("top","right",r.message,2000,"success")
         })
-    }
+    })
         
         

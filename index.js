@@ -66,7 +66,7 @@ app.post("/createApp/:appname",(req,res)=>{
 app.get("/appdashboard:app",(req,res)=>{
     var app=req.params.app.split(":")
     var [appName,bokenID]=app
-    console.log(appName,bokenID)
+    //console.log(appName,bokenID)
     if(req.session.granted){
         if(db.checkAppExists(appName)){
             //console.log(db.checkOwner(appName))
@@ -86,6 +86,41 @@ app.get("/appdashboard:app",(req,res)=>{
 app.get("/test:the",(req,res)=>{
     console.log(req.params.the)
     res.json(db.getApp("trapdoor"))
+})
+app.post("/addBook/:appName/:bokenId",(req,res)=>{
+    console.log("reqparams: ",req.params)
+    var {appName,bokenId}=req.params
+    var book=req.body
+    console.log("appname: ",appName)
+    console.log("book: ",book)
+    if(db.checkAppExists(appName)){
+        if(db.authenticateBoken(appName,bokenId)){
+            res.json(db.addBookTo(appName,bokenId,book))
+        }
+        else res.json({type:"error",message:"Invalid Boken"})
+    }
+    else res.json({type:"error",message:"The App does not exist"})
+})
+app.get("/updateBook/:appname/:bokenId/:bookId",(req,res)=>{
+    var {appName,bokenId,bookId}=req.params
+    var bookDetails=req.body
+    if(db.checkAppExists(appName)){
+        if(db.authenticateBoken(appName,bokenId)){
+            if(db.bookExists(appName,bokenId,bookId)){
+                res.json(db.updateBook(appName,bokenId,bookId,bookDetails))
+            }
+            else res.json({type:"error",message:"Book does not exist"}) 
+        }
+        else res.json({type:"error",message:"Invalid Boken"})
+    }
+    else res.json({type:"error",message:"The App does not exist"})
+
+})
+app.get("/deleteBook/:appname/:bokenId/:bookId",(req,res)=>{
+
+})
+app.get("/findbook/:appname/:bokenId/:bookId",(req,res)=>{
+
 })
 /*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/

@@ -90,6 +90,9 @@ if username
                 if(r.type=="success") {
                     $("#appboken").val(r.appBoken)
                     noty("top","right",r.message,2000,"success")
+                    setTimeout(()=>{
+                    window.location.reload()
+                },2000)
                 }
                 else if(r.type=="error") noty("top","right",r.message,2000,"success")
             })
