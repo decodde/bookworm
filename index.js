@@ -87,6 +87,19 @@ app.get("/test:the",(req,res)=>{
     console.log(req.params.the)
     res.json(db.getApp("trapdoor"))
 })
+app.get("/getBooks/:appName/:bokenID",(req,res)=>{
+    var {appName,bokenID}=req.params
+    
+    if(db.checkAppExists(appName)){
+        //console.log(db.checkOwner(appName))
+        if(db.checkBoken(appName,bokenID)){
+            res.json(db.getBooks(appName,bokenID))
+        }
+        else res.json({type:"error",message:"You have no access to the app with specified boken"})
+        
+    }
+    else res.json({type:"error",message:"App does not exist"})
+})
 app.post("/addBook/:appName/:bokenId",(req,res)=>{
     console.log("reqparams: ",req.params)
     var {appName,bokenId}=req.params
@@ -104,6 +117,7 @@ app.post("/addBook/:appName/:bokenId",(req,res)=>{
 app.get("/updateBook/:appname/:bokenId/:bookId",(req,res)=>{
     var {appName,bokenId,bookId}=req.params
     var bookDetails=req.body
+    
     if(db.checkAppExists(appName)){
         if(db.authenticateBoken(appName,bokenId)){
             if(db.bookExists(appName,bokenId,bookId)){
@@ -117,10 +131,28 @@ app.get("/updateBook/:appname/:bokenId/:bookId",(req,res)=>{
 
 })
 app.get("/deleteBook/:appname/:bokenId/:bookId",(req,res)=>{
-
+    if(db.checkAppExists(appName)){
+        if(db.authenticateBoken(appName,bokenId)){
+            if(db.bookExists(appName,bokenId,bookId)){
+                res.json(db.deleteBook(appName,bokenId,bookId))
+            }
+            else res.json({type:"error",message:"Book does not exist"}) 
+        }
+        else res.json({type:"error",message:"Invalid Boken"})
+    }
+    else res.json({type:"error",message:"The App does not exist"})
 })
-app.get("/findbook/:appname/:bokenId/:bookId",(req,res)=>{
-
+app.get("/findBook/:appname/:bokenId/:bookId",(req,res)=>{
+    if(db.checkAppExists(appName)){
+        if(db.authenticateBoken(appName,bokenId)){
+            if(db.bookExists(appName,bokenId,bookId)){
+                res.json(db.findBook(appName,bokenId,bookId))
+            }
+            else res.json({type:"error",message:"Book does not exist"}) 
+        }
+        else res.json({type:"error",message:"Invalid Boken"})
+    }
+    else res.json({type:"error",message:"The App does not exist"})
 })
 /*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/

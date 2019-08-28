@@ -5,15 +5,28 @@
 		"createdBy": "bob",
 		"books": [
 			{
-				"bookId":"0644444476",
-				"author": "Fasina Oreoluwa",
-				"doi": "8954ygm0uwt08thcntp9j3tgf",
-				"directLink": "",
-				"journal": "Harvard Science Journal",
-				"publisher": "Puffin Books",
-				"title": "Scientfic Methods to Train Your Dragon",
-				"publicationYear": "2020",
-				"abstract":"Nil"
+				"author": "J.K Rowlings, John Grisham",
+				"doi": "",
+				"directLink": "http://manybooks.net/inspiration/principles-of-getting-rich",
+				"journal": "None",
+				"publisher": "Roundhouse Books",
+				"title": "Principles of Getting Rich",
+				"publicationYear": "2003",
+				"abstract": "something small, something big, all are required to make a great man.",
+				"dateCreated": "Tue, 27 Aug 2019 13:48:25 GMT",
+				"bookId": "85530dfd657b8357dc86870f40a0467299aee51d9ce10d8b9b06de792ff1f984ed069c3111cca1a68a7a94e16f61ccea3a468852"
+			},
+			{
+				"author": "Robert Kyosundish",
+				"doi": "",
+				"directLink": "http://manybooks.net/inspiration/principles-of-getting-rich",
+				"journal": "None",
+				"publisher": "Roundhouse Books",
+				"title": "Rich Dad Poor Dad",
+				"publicationYear": "2003",
+				"abstract": "one runs in a rat race,another invests wisely and is of no victim to the vicious cycle",
+				"dateCreated": "Tue, 27 Aug 2019 13:52:25 GMT",
+				"bookId": "de3251c06ab3c53b09a07a60ff811c83e8beeefe0ffb6fabab23f1a56db49a6be6f3"
 			}
 		]
 	},

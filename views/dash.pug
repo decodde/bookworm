@@ -42,7 +42,7 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                                             p.text-left.lead Year of Publication: #{book.publicationYear}
                                             a.text-right.btn-right.btn.btn-primary(tabindex="0",role="button",data-delay="200",data-toggle="popover",data-trigger="focus",data-html="true",data-content=`<span class="lead"> Direct Link: </span><a class="lead" href="${book.directLink}"> ${book.directLink}</a><p class="lead"> Journal: ${book.journal}</p><p><span class="lead"> DOI:</span><a class="lead" href="${book.doi}"> ${book.doi}</a></p><p class="lead"> Published by: ${book.publisher}</p>`) More
                                             span
-                                                a.btn.btn-success.text-left(onclick=`edit()`) Edit
+                                                button.btn.btn-success.text-left(type="button",data-bookId=`${book.bookId}`,data-toggle="modal",data-target="#editBook") Edit
                                         hr
                                         br
                                     button.btn.btn-primary(type="button",data-toggle="modal",data-target="#addBook") New Book
@@ -78,6 +78,38 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                                 .modal-footer
                                     button.btn.btn-secondary(type="cancel",data-dismiss="modal") Cancel
                                     button.btn.btn-primary(type="submit") Add Book
+                        
+                    form.modal.fade#editBook(tabindex="-1",role="dialog",aria-labelledby="editBookLabel",aria-hidden="true")
+                        div.modal-dialog(role="document")
+                            div.modal-content
+                                div.modal-header
+                                    h5.modal-title#addBookLabel Edit Book
+                                    button.close(type="button",data-dismiss="modal",aria-label="Close")
+                                        span(aria-hidden="true") &times;
+                                .modal-body
+                                    div
+                                        div.form-group
+                                            input.form-control#EditbookId(disabled,type="text",placeholder="bookId (auto-generated)",required)
+                                        div.form-group
+                                            input.form-control#Edittitle(type="text",placeholder="title of book",required)
+                                        div.form-group
+                                            input.form-control#Editauthor(type="text",placeholder="book author(s)",required)
+                                        div.form-group
+                                            input.form-control#Editjournal(type="text",placeholder="journal",required)
+                                        div.form-group
+                                            input.form-control#Editdoi(type="text",placeholder="DOI (if any)")
+                                        div.form-group
+                                            input.form-control#EditdirectLink(type="text",placeholder="Direct Link (if any)")
+                                        div.form-group
+                                            input.form-control#Editpublisher(type="text",placeholder="Publisher(s)",required)
+                                        div.form-group
+                                            input.form-control#EditpublicationYear(type="text",placeholder="Publication Year",required)
+                                        div.form-group
+                                            textarea.form-control#Editabstract(type="text",cols="30",rows="10",placeholder="Abstract",required)
+                                        
+                                .modal-footer
+                                    button.btn.btn-secondary(type="cancel",data-dismiss="modal") Cancel
+                                    button.btn.btn-primary(type="submit") Update Book
     else if type=="error"
         .card
             .card-body
@@ -85,31 +117,45 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                     p.lead #{message}               
                         
 include bottom
-script(type="text/javascript").
-    $(function () {
-        $('[data-toggle="popover"]').popover()
-    })
-    $("#addBook").submit((e)=>{
-        e.preventDefault()
-        var author=$("#author").val()
-        var doi=$("#doi").val()
-        var directLink=$("#directLink").val()
-        var journal=$("#journal").val()
-        var publisher=$("#publisher").val()
-        var title=$("#title").val()
-        var publicationYear=$("#publicationYear").val()
-        var abstract=$("#abstract").val()
-
-        $.post(`/addBook/${$("#appname").val()}/${$("#appBoken").val()}`,{author:author,doi:doi,directLink:directLink,journal:journal,publisher:publisher,title:title,publicationYear:publicationYear,abstract:abstract},(r)=>{
-            if(r.type=="success") {
-                $("#bookId").val(r.bookId)
-                noty("top","right",r.message,2000,"success")
-                setTimeout(()=>{
-                    window.location.reload()
-                },2000)
-            }
-            else if(r.type=="error") noty("top","right",r.message,2000,"success")
+if type=="success"
+    script(type="text/javascript").
+        $(function () {
+            $('[data-toggle="popover"]').popover()
         })
-    })
-        
-        
+        populate=(r)=>{
+            
+        }
+        $('#editBook').on('show.bs.modal', (event)=> {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var recipient = button.data('bookid') 
+            var modal = $("#editBook")
+            modal.find('.modal-body #EditbookId').val(recipient)
+            $.get(`/findBook/${$("#appname").val()}/${$("#appBoken").val()}/${recipient}`,{},(r)=>{
+                if(r.type=="success") populate(r)
+                else noty("top","right",r.message,2000,"success"))
+            })
+        })
+        $("#addBook").submit((e)=>{
+            e.preventDefault()
+            var author=$("#author").val()
+            var doi=$("#doi").val()
+            var directLink=$("#directLink").val()
+            var journal=$("#journal").val()
+            var publisher=$("#publisher").val()
+            var title=$("#title").val()
+            var publicationYear=$("#publicationYear").val()
+            var abstract=$("#abstract").val()
+
+            $.post(`/addBook/${$("#appname").val()}/${$("#appBoken").val()}`,{author:author,doi:doi,directLink:directLink,journal:journal,publisher:publisher,title:title,publicationYear:publicationYear,abstract:abstract},(r)=>{
+                if(r.type=="success") {
+                    $("#bookId").val(r.bookId)
+                    noty("top","right",r.message,2000,"success")
+                    setTimeout(()=>{
+                        window.location.reload()
+                    },2000)
+                }
+                else if(r.type=="error") noty("top","right",r.message,2000,"success")
+            })
+        })
+            
+            
