@@ -130,7 +130,8 @@ app.post("/updateBook/:appName/:bokenId/:bookId",(req,res)=>{
     else res.json({type:"error",message:"The App does not exist"})
 
 })
-app.get("/deleteBook/:appname/:bokenId/:bookId",(req,res)=>{
+app.get("/deleteBook/:appName/:bokenId/:bookId",(req,res)=>{
+    var {appName,bokenId,bookId}=req.params
     if(db.checkAppExists(appName)){
         if(db.authenticateBoken(appName,bokenId)){
             if(db.bookExists(appName,bokenId,bookId)){
