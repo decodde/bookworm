@@ -200,13 +200,13 @@ app.get("/admin-dashboard",(req,res)=>{
     }
     req.session&&req.session.granted? res.render("admin",{exdt:extdt,settings:settings}):res.render("401")
 })
-/*dev*/
+/*dev*
 app.listen(3000,(err)=>{
     console.log("_____________\n\\       __   \\\n \\     |__|   \\  \n  \\        ___/\n   \\    ____   \\\n    \\   \\___\\   \\\n     \\___________\\ookworm-js  \n    ##  server running  ##")
 })
 /** */
 
-/*prod*
+/*prod*/
 app.listen(process.env.PORT||6700,(err)=>{
     console.log(err)
     console.log("_____________\n\\       __   \\\n \\     |__|   \\  \n  \\        ___/\n   \\    ____   \\\n    \\   \\___\\   \\\n     \\___________\\ookworm-js  \n    ##  server running  ##")
