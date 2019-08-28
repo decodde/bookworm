@@ -43,6 +43,8 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                                             a.text-right.btn-right.btn.btn-primary(tabindex="0",role="button",data-delay="200",data-toggle="popover",data-trigger="focus",data-html="true",data-content=`<span class="lead"> Direct Link: </span><a class="lead" href="${book.directLink}"> ${book.directLink}</a><p class="lead"> Journal: ${book.journal}</p><p><span class="lead"> DOI:</span><a class="lead" href="${book.doi}"> ${book.doi}</a></p><p class="lead"> Published by: ${book.publisher}</p>`) More
                                             span
                                                 button.btn.btn-success.text-left(type="button",data-bookId=`${book.bookId}`,data-toggle="modal",data-target="#editBook") Edit
+                                                button.btn.btn-danger.text-right(type="button",data-bookId=`${book.bookId}`,data-toggle="modal",data-target="#deleteBook") Delete
+  
                                         hr
                                         br
                                     button.btn.btn-primary(type="button",data-toggle="modal",data-target="#addBook") New Book
@@ -110,6 +112,20 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                                 .modal-footer
                                     button.btn.btn-secondary(type="cancel",data-dismiss="modal") Cancel
                                     button.btn.btn-primary(type="submit") Update Book
+
+                    form.modal.fade#deleteBook(tabindex="-1",role="dialog",aria-labelledby="deleteBookLabel",aria-hidden="true")
+                        div.modal-dialog(role="document")
+                            div.modal-content
+                                div.modal-header
+                                    h5.modal-title#addBookLabel Confirm Delete ?
+                                    button.close(type="button",data-dismiss="modal",aria-label="Close")
+                                        span(aria-hidden="true") &times;
+                                .modal-body
+                                    p.lead Are you sure you want to delete
+                                        p.text-info#bi ...
+                                .modal-footer
+                                    button.btn.btn-secondary(type="cancel",data-dismiss="modal") No
+                                    button.btn.btn-danger(type="submit") Delete Book
     else if type=="error"
         .card
             .card-body
@@ -123,8 +139,28 @@ if type=="success"
             $('[data-toggle="popover"]').popover()
         })
         populate=(r)=>{
-            
+            var a=Object.keys(r.data)
+            a.forEach(o=>{$(`#editBook #Edit${o}`).val(r.data[o])})
         }
+        $("#deleteBook").submit((e)=>{
+            e.preventDefault()
+             $.get(`/deleteBook/${$("#appname").val()}/${$("#appBoken").val()}/${$("#deleteBook #bi").text()}`,{},(r)=>{
+                if(r.type=="success") {
+                    noty("top","right",r.message,1000,"success")
+                    setTimeout(()=>{
+                        window.location.reload()
+                    },1000)
+                }
+                else noty("top","right",r.message,2000,"success")
+            })
+        })
+        $("#deleteBook").on('show.bs.modal', (event)=> {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var recipient = button.data('bookid') 
+            var modal = $("#deleteBook")
+            modal.find('.modal-body #bi').text(recipient)
+           
+        })
         $('#editBook').on('show.bs.modal', (event)=> {
             var button = $(event.relatedTarget) // Button that triggered the modal
             var recipient = button.data('bookid') 
@@ -132,7 +168,26 @@ if type=="success"
             modal.find('.modal-body #EditbookId').val(recipient)
             $.get(`/findBook/${$("#appname").val()}/${$("#appBoken").val()}/${recipient}`,{},(r)=>{
                 if(r.type=="success") populate(r)
-                else noty("top","right",r.message,2000,"success"))
+                else noty("top","right",r.message,2000,"success")
+            })
+        })
+        $("#editBook").submit((e)=>{
+            e.preventDefault()
+            var data={}
+            var all=$("#editBook .form-control")
+            for(var x=0;x<all.length;x++){
+                var rm=all[x].id.split("Edit")
+                rm=rm[1]
+                data[rm]=all[x].value
+            }
+            $.post(`/updateBook/${$("#appname").val()}/${$("#appBoken").val()}/${data.bookId}`,data,(r)=>{
+                if(r.type=="success"){
+                    noty("top","right",r.message,2000,"success")
+                    setTimeout(()=>{
+                        window.location.reload()
+                    },1000)
+                }
+                else noty("top","right",r.message,2000,"success")
             })
         })
         $("#addBook").submit((e)=>{

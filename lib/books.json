@@ -23,10 +23,23 @@
 				"journal": "None",
 				"publisher": "Roundhouse Books",
 				"title": "Rich Dad Poor Dad",
-				"publicationYear": "2003",
+				"publicationYear": "2009",
 				"abstract": "one runs in a rat race,another invests wisely and is of no victim to the vicious cycle",
 				"dateCreated": "Tue, 27 Aug 2019 13:52:25 GMT",
-				"bookId": "de3251c06ab3c53b09a07a60ff811c83e8beeefe0ffb6fabab23f1a56db49a6be6f3"
+				"bookId": "de3251c06ab3c53b09a07a60ff811c83e8beeefe0ffb6fabab23f1a56db49a6be6f3",
+				"dateModified": "Wed, 28 Aug 2019 11:26:10 GMT"
+			},
+			{
+				"author": "Janet Evanovich",
+				"doi": "None",
+				"directLink": "",
+				"journal": "None",
+				"publisher": "Booktour",
+				"title": "One For The Money",
+				"publicationYear": "1998",
+				"abstract": "A detective novel focused on the life of Stephanie Plum, a bounty hunter.",
+				"dateCreated": "Wed, 28 Aug 2019 11:56:52 GMT",
+				"bookId": "24c318d78cf2e4d16c900c8da82bb2832f6cd78be8ac31360e923a83ccec52ee"
 			}
 		]
 	},
