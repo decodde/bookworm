@@ -131,6 +131,7 @@ app.post("/updateBook/:appName/:bokenId/:bookId",(req,res)=>{
 
 })
 app.get("/deleteBook/:appName/:bokenId/:bookId",(req,res)=>{
+    
     var {appName,bokenId,bookId}=req.params
     if(db.checkAppExists(appName)){
         if(db.authenticateBoken(appName,bokenId)){
@@ -173,22 +174,6 @@ app.get("/logout",(req,res)=>{
     else res.json({type:"error",data:"false",message:"Unable to Logout"})
 })
 
-
-app.post("/savebook/:token",(req,res)=>{
-    const{token,bookId}=req.params
-    (req.session&&req.session.granted&&db.checkToken(token))?db.savebook(req.body.data):{type:"error",message:"You are not permitted"}
-})
-app.get("/getbook/:token/:bookId",(req,res)=>{
-    const{token,bookId}=req.params
-    db.checkToken(token)?db.getbook(token,bookId):{type:"error",message:"You are not permitted"}
-})
-
-app.get("/searchboooks/:token/",(req,res)=>{
-
-})
-
-
-
 app.get("/getusers",(req,res)=>{
     var dtusers=db.getusers()
     req.session&&req.session.granted&&req.session.role=="admin"?res.json(dtusers):res.send("You are not authorized")
@@ -217,7 +202,6 @@ app.get("/admin-dashboard",(req,res)=>{
 })
 /*dev*/
 app.listen(3000,(err)=>{
-    console.log(err)
     console.log("_____________\n\\       __   \\\n \\     |__|   \\  \n  \\        ___/\n   \\    ____   \\\n    \\   \\___\\   \\\n     \\___________\\ookworm-js  \n    ##  server running  ##")
 })
 /** */
