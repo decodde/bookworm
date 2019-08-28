@@ -1,27 +1,38 @@
 include top
 
-header.navbar.navbar-expand.flex-column.flex-md-row.bg-dark
-    lead.text-light.navbar-brand.mr-0.mr-md-2(href="#") bookworm
-    ul.navbar-nav.flex-row.ml-md-auto.d-none.d-md-flex
-        if exdt.username
-            li.nav-tem.dropdown
-                a.nav-item.nav-link.dropdown-toggle.mr-md-2(href="#",id="options",data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") Options
-                div.dropdown-menu.dropdown-menu-right(aria-labelledby="options")
-                    a.dropdown-item(href="/logout") Logout
-        else
+nav.navbar.navbar-expand-lg.navbar-light.bg-info
+    lead.navbar-brand.mr-0.mr-md-2(href="#") bookworm
+    button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation")
+        span.navbar-toggler-icon
+
+    .collapse.navbar-collapse#navbarSupportedContent
+        ul.navbar-nav.mr-auto.text-light
             li.nav-item
-                a.nav-item(href="/register") Register
-            br
-            li.nav-item
-                a.nav-item(href="/login") Login
-if settings.removeBanner!='true'
-    .jumbotron
-        h4.display-3 Hello
-        p.lead This is bookworm; a node.js based application for rendering publications 
-        hr.my-4 
-        p.lead Please do login to setup environment
-        p.lead 
-            a.btn.btn-primary.btn-lg(href="/setup-stage1",role="button") Setup 
+                a.nav-link(href="/apidocs") API Documentation
+            if exdt.username
+                li.nav-item.dropdown
+                    a.nav-item.nav-link.dropdown-toggle.mr-md-2(href="#",id="options",data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") Options
+                    div.dropdown-menu.dropdown-menu-right(aria-labelledby="options")
+                        a.dropdown-item.text-info(href="/logout") Logout
+            else
+                li.nav-item
+                    a.nav-link(href="/register") Register
+                li.nav-item
+                    a.nav-link(href="/login") Login
+                
+        
+
+.jumbotron
+    h4.display-3 Hello
+    p.lead This is bookworm; a node.js based web-application with an API for rendering publications 
+    p.lead Please do register/login to get started
+    if !exdt.username
+        a.btn.btn-primary.btn-lg(role="button",href="/login",style="") Login
+        a.btn.btn-info.btn-lg(role="button",href="/register") Register 
+
+    else
+        a.btn.btn-success.btn-md(role="button",href="/dashboard") Go to Dashboard     
+
                 
                     
 include bottom

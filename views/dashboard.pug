@@ -8,14 +8,20 @@ style(rel="stylesheet").
         top:0px;
         left:700px !important;
     }
-header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
-    lead.text-light.navbar-brand.mr-0.mr-md-2(href="#") bookworm
-    ul.navbar-nav.flex-row.ml-md-auto.d-none.d-md-flex
-        if username
+nav.navbar.navbar-expand-lg.navbar-light.bg-info
+    lead.navbar-brand.mr-0.mr-md-2(href="#") bookworm
+    button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation")
+        span.navbar-toggler-icon
+
+    .collapse.navbar-collapse#navbarSupportedContent
+        ul.navbar-nav.mr-auto.text-light
             li.nav-item.dropdown
-                a.nav-item.nav-link.dropdown-toggle.mr-md-2(href="#",id="options",data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") #{username}
+                a.nav-item.nav-link.dropdown-toggle.mr-md-2(href="#",id="options",data-toggle="dropdown",aria-haspopup="true",aria-expanded="false") Options
                 div.dropdown-menu.dropdown-menu-right(aria-labelledby="options")
-                    a.dropdown-item(onclick="logout()") Logout
+                    a.dropdown-item(href="/apidocs") API Documentation
+                    if username
+                        a.dropdown-item.text-info(href="/logout") Logout
+                        
     
 .container-fluid
     if username
@@ -75,11 +81,7 @@ header.navbar.navbar-expand.flex-column.flex-md-row.bg-info
                                 .modal-footer
                                     button.btn.btn-secondary(type="button",data-dismiss="modal") Cancel
                                     button.btn.btn-primary(type="button",onclick="tryAdd()") Add
-                    div.modal#alert        
-                        .modal-body.bg-dark
-                            span
-                                button.btn.text-white(style="float:right;background:transparent",data-dismiss="modal",aria-label="Close",aria-hidden="true") X
-                            span.text-white.mesg Text
+                    
                         
 
 include bottom
