@@ -14,8 +14,12 @@ app.use(session({
     maxAge:600000,
     saveUninitialized: false
   }));
-
-
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    
+    next();
+  });
 app.get("/",function(req,res){
     var extdt={
         role:req.session.role,
@@ -87,6 +91,7 @@ app.get("/test:the",(req,res)=>{
     console.log(req.params.the)
     res.json(db.getApp("trapdoor"))
 })
+
 app.get("/getBooks/:appName/:bokenID",(req,res)=>{
     var {appName,bokenID}=req.params
     
