@@ -46,7 +46,7 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-info
                                         div(id=`${book.bookId}`)
                                             p.lead.display-4 #{book.title}
                                             p.text-left.lead Author: #{book.author}
-                                            p.text-left.lead Year of Publication: #{book.publicationYear}
+                                            p.text-left.lead Published: #{book.publicationYear}
                                             a.text-right.btn-right.btn.btn-primary(tabindex="0",role="button",data-delay="200",data-toggle="popover",data-trigger="focus",data-html="true",data-content=`<span class="lead"> Direct Link: </span><a class="lead" href="${book.directLink}"> ${book.directLink}</a><p class="lead"> Journal: ${book.journal}</p><p><span class="lead"> DOI:</span><a class="lead" href="${book.doi}"> ${book.doi}</a></p><p class="lead"> Published by: ${book.publisher}</p>`) More
                                             span
                                                 button.btn.btn-success.text-left(type="button",data-bookId=`${book.bookId}`,data-toggle="modal",data-target="#editBook") Edit
