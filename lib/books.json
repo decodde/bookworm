@@ -8,7 +8,7 @@
 				"author": "J.K Rowlings, John Grisham",
 				"doi": "",
 				"directLink": "http://manybooks.net/inspiration/principles-of-getting-rich",
-				"journal": "None",
+				"journal": "",
 				"publisher": "Roundhouse Books",
 				"title": "Principles of Getting Rich",
 				"publicationYear": "2003",
@@ -20,7 +20,7 @@
 				"author": "Robert Kyosundish",
 				"doi": "",
 				"directLink": "http://manybooks.net/inspiration/principles-of-getting-rich",
-				"journal": "None",
+				"journal": "",
 				"publisher": "Roundhouse Books",
 				"title": "Rich Dad Poor Dad",
 				"publicationYear": "2009",
@@ -33,13 +33,14 @@
 				"author": "Janet Evanovich",
 				"doi": "None",
 				"directLink": "",
-				"journal": "None",
+				"journal": "",
 				"publisher": "Booktour",
 				"title": "One For The Money",
-				"publicationYear": "1998",
+				"publicationYear": "1995",
 				"abstract": "A detective novel focused on the life of Stephanie Plum, a bounty hunter.",
 				"dateCreated": "Wed, 28 Aug 2019 11:56:52 GMT",
-				"bookId": "24c318d78cf2e4d16c900c8da82bb2832f6cd78be8ac31360e923a83ccec52ee"
+				"bookId": "24c318d78cf2e4d16c900c8da82bb2832f6cd78be8ac31360e923a83ccec52ee",
+				"dateModified": "Thu, 29 Aug 2019 11:59:40 GMT"
 			}
 		]
 	},
