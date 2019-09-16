@@ -1,1 +1,4 @@
 /node_modules
+/lib/apps.json
+/lib/bookwormUsers.json
+/lib/books.json
