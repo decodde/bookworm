@@ -4,6 +4,21 @@ var fs=require("fs")
 var path=require("path")
 var db=require("./lib/dbprocess")
 var session=require('express-session')
+const mongo=require('mongodb').MongoClient
+const mongodbURL = 'mongodb+srv://railosapp:mongo@railos-vkklb.mongodb.net/test?retryWrites=true';
+
+let ObjectId=require("mongodb").ObjectId
+var mongoDb;
+var dbusers;
+var books;
+var apps;
+mongo.connect(mongodbURL,function(err,db0){
+    mongoDb=db0.db("bookworm");
+    apps=mongoDb.collection("apps")
+    books=mongoDb.collection("books")
+    dbusers=mongoDb.collection("bookwormUsers");
+})
+
 app.use(require('body-parser')());
 app.use(express.static(__dirname+"/public"))
 app.set('views',__dirname+"/views")
@@ -34,12 +49,14 @@ app.get("/register",(req,res)=>{
     res.render("register")
 })
 app.post("/register",(req,res)=>{
-    var a=db.checkNameRules(req.body)
-    console.log(typeof a)
-    if(typeof a != "object"){
-        res.json(db.processRegister(req.body))
-    }
-    else res.json(a)
+    dbusers.find(req.body).toArray((err,data)=>{
+        if(data.length>0){
+            res.json("")
+        }
+        else res.json(db.processRegister(req.body))
+        
+    })
+   
 })
 app.get("/dashboard",(req,res)=>{
     req.session.username?res.render("dashboard",{username:req.session.username,apps:db.getUserApps(req.session.username)}): res.render("dashboard")
