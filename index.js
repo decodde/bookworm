@@ -4,20 +4,16 @@ var fs=require("fs")
 var path=require("path")
 var db=require("./lib/dbprocess")
 var session=require('express-session')
-const mongo=require('mongodb').MongoClient
-const mongodbURL = 'mongodb+srv://railosapp:mongo@railos-vkklb.mongodb.net/test?retryWrites=true';
+var mongoose=require("mongoose")
 
-let ObjectId=require("mongodb").ObjectId
-var mongoDb;
-var dbusers;
-var books;
-var apps;
-mongo.connect(mongodbURL,function(err,db0){
-    mongoDb=db0.db("bookworm");
-    apps=mongoDb.collection("apps")
-    books=mongoDb.collection("books")
-    dbusers=mongoDb.collection("bookwormUsers");
-})
+var mongoose = require('mongoose'),
+ Schema = mongoose.Schema;
+mongoose.connect('mongodb://localhost:27017/bookworm');
+mongoose.connection.on('open', function() {
+console.log('Mongoose connected.');
+});
+
+var BookwormUsers = require('./lib/models').BookwormUsers,Apps=require('./lib/models').Apps,Books=require('./lib/models').Books;
 
 app.use(require('body-parser')());
 app.use(express.static(__dirname+"/public"))
@@ -40,8 +36,8 @@ app.get("/",function(req,res){
         role:req.session.role,
         username:req.session.username
     }
-    var settings=db.settings()
-    res.render("home",{settings:settings,exdt:extdt})
+    
+    res.render("home",{exdt:extdt})
 })
 
 
@@ -49,15 +45,26 @@ app.get("/register",(req,res)=>{
     res.render("register")
 })
 app.post("/register",(req,res)=>{
-    dbusers.find(req.body).toArray((err,data)=>{
-        if(data.length>0){
-            res.json("")
+    var{username,emailAddress,mobileNumber}=req.body
+    BookwormUsers.find({username:username,emailAddress:emailAddress,mobileNumber:mobileNumber},(err,data)=>{
+        console.log(data)
+        if(data.length==0){
+                req.body.verified=false;
+                req.body.verificationLink=db.generateBoken(req.body.firstName,req.body.lastname)
+                BookwormUsers.insertMany(req.body,(err,data)=>{
+                    if(err) console.log(err)
+                    db.sendEmail("register",req.body)
+                    res.json({type:"success",message:"Created Account Successfully"})
+                })
         }
-        else res.json(db.processRegister(req.body))
+        else if(data.length>0){
+                res.json(db.processRegisterError(req.body,data))
+        }
         
     })
    
 })
+
 app.get("/dashboard",(req,res)=>{
     req.session.username?res.render("dashboard",{username:req.session.username,apps:db.getUserApps(req.session.username)}): res.render("dashboard")
 })
@@ -66,14 +73,21 @@ app.get("/login",function(req,res){
 })
 
 app.post("/login",(req,res)=>{
-    const checkLogin=db.login("normal",req)
-    if(checkLogin){
-        req.session.username=req.body.username
-        req.session.granted=true
-        res.json({type:"success",value:true})
-    }
+    console.log("here")
+    BookwormUsers.find({username:`${req.body.username}`},(err,data)=>{
+        if(data.length==0){
+            res.json({type:"error",message:"Login details are incorrect"})
+        }
+        if(data.length>0){
+            if(data.password==req.body.password){
+                req.session.username=req.body.username
+                req.session.granted=true
+                res.json({type:"success",value:true})
+            }
+            else res.json({type:"error",message:"Login details are incorrect"})
+        }
+    })
     
-    else res.json({type:"error",message:"Invalid login details"})
 })
 app.post("/createApp/:appname",(req,res)=>{
 
@@ -185,7 +199,22 @@ app.get("/verify",(req,res)=>{
     req.session.granted?res.redirect("/dashboard"):res.render("verifyResult",{type:"null"})
 })
 app.get("/verify/:name/:verifyLink",(req,res)=>{
+    var {name,verifyLink}=req.params
     var a=db.verify(req.params.name,req.params.verifyLink)
+    BookwormUsers.find({username:`${name}`,verificationLink:`${verifyLink}`},(err,data)=>{
+        if(data.length==0){
+            res.json({type:"error",message:"User does not exist"})
+        }
+        else if(data.length>0){
+            console.log(data[0])
+            if(data[0].username==name&&data[0].verificationLink==verifyLink&&data[0].verified==false){
+                BookwormUsers.updateOne({username:`${name}`,verificationLink:`${verifyLink}`},{$set:{verified:true}})
+                res.json({type:"success",message:"Verification Successful"})
+            }
+            else if(data[0].verificationLink!=verifyLink)res.json({type:"error",message:"Verification Link is not valid"})
+            else if (data[0].verified==false)res.json({type:"error",message:"User already verified"})
+        }
+    })
     req.session.granted?res.redirect("/dashboard"):res.render("verifyResult",a)
 })
 app.get("/logout",(req,res)=>{
