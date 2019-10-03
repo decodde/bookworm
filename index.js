@@ -66,19 +66,24 @@ app.post("/register",(req,res)=>{
 })
 
 app.get("/dashboard",(req,res)=>{
-    req.session.username?res.render("dashboard",{username:req.session.username,apps:db.getUserApps(req.session.username)}): res.render("dashboard")
+    if(req.session.granted){
+        Apps.find({createdBy:req.session.username},(err,data)=>{
+            res.render("dashboard",{username:req.session.username,apps:data})
+        })
+    }
+    else res.render("dashboard")
 })
 app.get("/login",function(req,res){
     res.render("login")
 })
 
 app.post("/login",(req,res)=>{
-    console.log("here")
-    BookwormUsers.find({username:`${req.body.username}`},(err,data)=>{
-        if(data.length==0){
+    BookwormUsers.findOne({username:`${req.body.username}`},(err,data)=>{
+        if(data==null){
             res.json({type:"error",message:"Login details are incorrect"})
         }
-        if(data.length>0){
+        else{
+           
             if(data.password==req.body.password){
                 req.session.username=req.body.username
                 req.session.granted=true
@@ -90,10 +95,21 @@ app.post("/login",(req,res)=>{
     
 })
 app.post("/createApp/:appname",(req,res)=>{
-
-    var a=db.addApp({appName:req.params.appname,username:req.session.username})
-    if(typeof a=="object")res.json(a)
-    else res.json({type:"error",message:"Appname already in use"})
+    if(req.session.granted){
+        Apps.findOne({appName:`${req.params.appname}`},(err,data)=>{
+            if (data==null){
+                var boken=db.generateBoken(req.params.appname,req.session.username)
+                var nApp=new Apps({appName:req.params.appname,createdBy:req.session.username,appBoken:boken})
+                var nBook=new Books({appName:req.params.appname,createdBy:req.session.username,appBoken:boken,books:[]})
+                nApp.save()
+                nBook.save()
+                //db.sendEmail("newapp")
+                res.json({type:"success",message:"Created app succesfully",appBoken:boken})
+            }
+            else res.json({type:"error",message:"Appname already in use"})
+        })
+    }
+    else res.json({type:"error",message:"Not logged in"})
 })
 
 //@TODO ---> 
@@ -103,17 +119,23 @@ app.get("/appdashboard:app",(req,res)=>{
     var [appName,bokenID]=app
     //console.log(appName,bokenID)
     if(req.session.granted){
-        if(db.checkAppExists(appName)){
-            //console.log(db.checkOwner(appName))
-            if(req.session.username==db.checkOwner(appName).owner){
-                if(db.checkBokenPart(appName,bokenID)){
-                    res.render("dash",db.getApp(appName))
+        Apps.findOne({appName:appName},(err,data)=>{
+            if (data==null)res.render("dash",{type:"error",message:"App does not exist"})
+            else {
+                if(data.createdBy==req.session.username){
+                    var partBoken= data.appBoken
+                    partBoken=partBoken.split("|")
+                    partBoken=partBoken[0]
+                    if(bokenID==partBoken){
+                        Books.findOne({appName:appName,createdBy:req.session.username},(err,data)=>{
+                            res.render("dash",{type:"success",data:data,message:""})
+                        })
+                    }
+                    else res.render("dash",{type:"error",message:"Invalid Boken"})
                 }
+                else res.render("dash",{type:"error",message:"You have no access to the app"})
             }
-            else res.render("dash",{type:"error",message:"You have no access to the app"})
-        }
-        else res.render("dash",{type:"error",message:"App does not exist"})
-      
+        })
     }
     else res.render("dash",{type:"error",message:"You are unauthorized to access this page"})
 })
@@ -200,22 +222,23 @@ app.get("/verify",(req,res)=>{
 })
 app.get("/verify/:name/:verifyLink",(req,res)=>{
     var {name,verifyLink}=req.params
-    var a=db.verify(req.params.name,req.params.verifyLink)
-    BookwormUsers.find({username:`${name}`,verificationLink:`${verifyLink}`},(err,data)=>{
-        if(data.length==0){
-            res.json({type:"error",message:"User does not exist"})
-        }
-        else if(data.length>0){
-            console.log(data[0])
-            if(data[0].username==name&&data[0].verificationLink==verifyLink&&data[0].verified==false){
-                BookwormUsers.updateOne({username:`${name}`,verificationLink:`${verifyLink}`},{$set:{verified:true}})
-                res.json({type:"success",message:"Verification Successful"})
+    if(req.session.granted)res.redirect("/dashboard")
+    else{
+        BookwormUsers.find({username:`${name}`,verificationLink:`${verifyLink}`},(err,data)=>{
+            if(data.length==0){
+                res.json({type:"error",message:"User does not exist"})
             }
-            else if(data[0].verificationLink!=verifyLink)res.json({type:"error",message:"Verification Link is not valid"})
-            else if (data[0].verified==false)res.json({type:"error",message:"User already verified"})
-        }
-    })
-    req.session.granted?res.redirect("/dashboard"):res.render("verifyResult",a)
+            else if(data.length>0){
+                console.log(data[0])
+                if(data[0].username==name&&data[0].verificationLink==verifyLink&&data[0].verified==false){
+                    BookwormUsers.updateOne({username:`${name}`,verificationLink:`${verifyLink}`},{$set:{verified:true}})
+                    res.render("/verifyResult",{type:"success",message:"Verification successful"})
+                }
+                else if(data[0].verificationLink!=verifyLink)res.render("verifyResult",{type:"error",message:"Verification Link is not valid"})
+                else if (data[0].verified==false)res.render("verifyResult",{type:"error",message:"User already verified"})
+            }
+        })
+    }
 })
 app.get("/logout",(req,res)=>{
     if(req.session&&req.session.granted){
