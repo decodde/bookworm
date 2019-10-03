@@ -139,24 +139,22 @@ app.get("/appdashboard:app",(req,res)=>{
     }
     else res.render("dash",{type:"error",message:"You are unauthorized to access this page"})
 })
-/**/
-app.get("/test:the",(req,res)=>{
-    console.log(req.params.the)
-    res.json(db.getApp("trapdoor"))
-})
 
 app.get("/getBooks/:appName/:bokenID",(req,res)=>{
     var {appName,bokenID}=req.params
-    
-    if(db.checkAppExists(appName)){
-        //console.log(db.checkOwner(appName))
-        if(db.checkBoken(appName,bokenID)){
-            res.json(db.getBooks(appName,bokenID))
+    Apps.findOne({appName:appName},(err,data)=>{
+        if (data==null)res.json({type:"error",message:"App does not exist"})
+        else {
+            var partBoken= data.appBoken
+            if(bokenID==partBoken){
+                Books.findOne({appName:appName,appBoken:bokenID },(err,data)=>{
+                    console.log(data)
+                    res.json({type:"success",data:data.books,message:"Books Collated Successfully"})
+                })
+            }
+            else res.json({type:"error",message:"Boken and Appname Mismatch"})
         }
-        else res.json({type:"error",message:"You have no access to the app with specified boken"})
-        
-    }
-    else res.json({type:"error",message:"App does not exist"})
+    })
 })
 app.post("/addBook/:appName/:bokenId",(req,res)=>{
     console.log("reqparams: ",req.params)
