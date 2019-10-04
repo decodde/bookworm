@@ -8,7 +8,7 @@ var mongoose=require("mongoose")
 
 var mongoose = require('mongoose'),
  Schema = mongoose.Schema;
-mongoose.connect('mongodb://localhost:27017/bookworm');
+mongoose.connect('mongodb+srv://railosapp:mongo@railos-vkklb.mongodb.net/admin?retryWrites=true&w=majority');
 mongoose.connection.on('open', function() {
 console.log('Mongoose connected.');
 });
