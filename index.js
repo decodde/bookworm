@@ -100,9 +100,7 @@ app.post("/createApp/:appname",(req,res)=>{
             if (data==null){
                 var boken=db.generateBoken(req.params.appname,req.session.username)
                 var nApp=new Apps({appName:req.params.appname,createdBy:req.session.username,appBoken:boken})
-                var nBook=new Books({appName:req.params.appname,createdBy:req.session.username,appBoken:boken,books:[]})
                 nApp.save()
-                nBook.save()
                 //db.sendEmail("newapp")
                 res.json({type:"success",message:"Created app succesfully",appBoken:boken})
             }
@@ -123,12 +121,19 @@ app.get("/appdashboard:app",(req,res)=>{
             if (data==null)res.render("dash",{type:"error",message:"App does not exist"})
             else {
                 if(data.createdBy==req.session.username){
+                    var wholeBoken=data.appBoken
                     var partBoken= data.appBoken
                     partBoken=partBoken.split("|")
                     partBoken=partBoken[0]
                     if(bokenID==partBoken){
-                        Books.findOne({appName:appName,createdBy:req.session.username},(err,data)=>{
-                            res.render("dash",{type:"success",data:data,message:""})
+                        Books.find({appName:appName,appBoken:wholeBoken },(err,data)=>{
+                            var books=data
+                            var data={}
+                            data.appName=appName
+                            data.appBoken=wholeBoken
+                            data.books=books
+                            console.log(data)
+                            res.render("dash",{type:"success",data:data,message:"Books Collated Successfully"})
                         })
                     }
                     else res.render("dash",{type:"error",message:"Invalid Boken"})
@@ -147,9 +152,14 @@ app.get("/getBooks/:appName/:bokenID",(req,res)=>{
         else {
             var partBoken= data.appBoken
             if(bokenID==partBoken){
-                Books.findOne({appName:appName,appBoken:bokenID },(err,data)=>{
+                Books.find({appName:appName,appBoken:bokenID },(err,data)=>{
+                    var books=data
+                    var data={}
+                    data.appName=appName
+                    data.appBoken=bokenID
+                    data.books=books
                     console.log(data)
-                    res.json({type:"success",data:data.books,message:"Books Collated Successfully"})
+                    res.json({type:"success",data:data,message:"Books Collated Successfully"})
                 })
             }
             else res.json({type:"error",message:"Boken and Appname Mismatch"})
@@ -160,58 +170,80 @@ app.post("/addBook/:appName/:bokenId",(req,res)=>{
     console.log("reqparams: ",req.params)
     var {appName,bokenId}=req.params
     var book=req.body
-    console.log("appname: ",appName)
-    console.log("book: ",book)
-    if(db.checkAppExists(appName)){
-        if(db.authenticateBoken(appName,bokenId)){
-            res.json(db.addBookTo(appName,bokenId,book))
+    
+    Apps.findOne({appName:appName,appBoken:bokenId},(err,data)=>{
+        if (data==null)res.json({type:"error",message:"App does not exist or Boken and Appname Mismatch"})
+        else {
+            var bookId=db.generateBookId(book.author,book.title)
+            bookId=bookId.split("|")
+            bookId=bookId[0]
+            var dateCreated=new Date()
+            book.appName=appName
+            book.appBoken=bokenId
+            book.createdBy=data.createdBy
+            book.dateCreated=dateCreated.toUTCString()
+            book.bookId=bookId
+            Books.insertMany(book)
+            res.json({type:"success",message:"Book Added Successfully",bookId:bookId})
         }
-        else res.json({type:"error",message:"Invalid Boken"})
-    }
-    else res.json({type:"error",message:"The App does not exist"})
+    })
 })
+//var book={t:"t"}
+//Books.findOneAndUpdate({appName:"trapdoor"},{$push:{books:book}})
 app.post("/updateBook/:appName/:bokenId/:bookId",(req,res)=>{
     var {appName,bokenId,bookId}=req.params
     var bookDetails=req.body
-    
-    if(db.checkAppExists(appName)){
-        if(db.authenticateBoken(appName,bokenId)){
-            if(db.bookExists(appName,bokenId,bookId)){
-                res.json(db.updateBook(appName,bokenId,bookId,bookDetails))
-            }
-            else res.json({type:"error",message:"Book does not exist"}) 
+    Apps.findOne({appName:appName,appBoken:bokenId},(err,data)=>{
+        if (data==null)res.json({type:"error",message:"App does not exist or Boken and Appname Mismatch"})
+        else {
+            Books.findOne({appName:appName,appBoken:bokenId,bookId:bookId},(err,data)=>{
+                if(data==null) res.json({type:"error",message:"Book does not exist"})
+                else{
+                    
+                    Books.findOneAndUpdate({appName:appName,appBoken:bokenId,bookId:bookId},bookDetails,{new:true},(err,data)=>{
+                        console.log(data)
+                    })
+                    res.json({type:"success",message:"Updated Book Successfully"})
+                }
+            })
         }
-        else res.json({type:"error",message:"Invalid Boken"})
-    }
-    else res.json({type:"error",message:"The App does not exist"})
+    })
 
 })
 app.get("/deleteBook/:appName/:bokenId/:bookId",(req,res)=>{
     
     var {appName,bokenId,bookId}=req.params
-    if(db.checkAppExists(appName)){
-        if(db.authenticateBoken(appName,bokenId)){
-            if(db.bookExists(appName,bokenId,bookId)){
-                res.json(db.deleteBook(appName,bokenId,bookId))
-            }
-            else res.json({type:"error",message:"Book does not exist"}) 
+    Apps.findOne({appName:appName,appBoken:bokenId},(err,data)=>{
+        if (data==null)res.json({type:"error",message:"App does not exist or Boken and Appname Mismatch"})
+        else {
+            Books.findOne({appName:appName,appBoken:bokenId,bookId:bookId},(err,data)=>{
+                if(data==null) res.json({type:"error",message:"Book does not exist"})
+                else{
+                    data.remove((err)=>{
+                        if (err) throw err
+                        else {
+                            console.log("User deleted success")
+                            res.json({type:"success",message:"Deleted Book Successfully"})
+                        }
+                    })   
+                }
+            })
         }
-        else res.json({type:"error",message:"Invalid Boken"})
-    }
-    else res.json({type:"error",message:"The App does not exist"})
+    })
 })
 app.get("/findBook/:appName/:bokenId/:bookId",(req,res)=>{
     var {appName,bokenId,bookId}=req.params
-    if(db.checkAppExists(appName)){
-        if(db.authenticateBoken(appName,bokenId)){
-            if(db.bookExists(appName,bokenId,bookId)){
-                res.json(db.findBook(appName,bokenId,bookId))
-            }
-            else res.json({type:"error",message:"Book does not exist"}) 
+    Apps.findOne({appName:appName,appBoken:bokenId},(err,data)=>{
+        if (data==null)res.json({type:"error",message:"App does not exist or Boken and Appname Mismatch"})
+        else {
+            Books.findOne({appName:appName,appBoken:bokenId,bookId:bookId},(err,data)=>{
+                if(data==null) res.json({type:"error",message:"Book does not exist"})
+                else{
+                    res.json({type:"success",data:data,message:"Retrieved Book Successfully"})
+                }
+            })
         }
-        else res.json({type:"error",message:"Invalid Boken"})
-    }
-    else res.json({type:"error",message:"The App does not exist"})
+    })
 })
 /*>>>>>>>>>>>>>>>>>>> API <<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<*/
