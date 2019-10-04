@@ -101,8 +101,13 @@ app.post("/createApp/:appname",(req,res)=>{
                 var boken=db.generateBoken(req.params.appname,req.session.username)
                 var nApp=new Apps({appName:req.params.appname,createdBy:req.session.username,appBoken:boken})
                 nApp.save()
-                //db.sendEmail("newapp")
-                res.json({type:"success",message:"Created app succesfully",appBoken:boken})
+                BookwormUsers.findOne({username:req.session.username},(err,data)=>{
+                    data.bokenId=boken
+                    data.appName=req.params.appname
+                    db.sendEmail("newapp",data)
+                    res.json({type:"success",message:"Created app succesfully",appBoken:boken})
+                })
+                
             }
             else res.json({type:"error",message:"Appname already in use"})
         })
