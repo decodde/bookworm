@@ -267,7 +267,7 @@ app.get("/verify/:name/:verifyLink",(req,res)=>{
                 console.log(data[0])
                 if(data[0].username==name&&data[0].verificationLink==verifyLink&&data[0].verified==false){
                     BookwormUsers.updateOne({username:`${name}`,verificationLink:`${verifyLink}`},{$set:{verified:true}})
-                    res.render("/verifyResult",{type:"success",message:"Verification successful"})
+                    res.render("verifyResult",{type:"success",message:"Verification successful"})
                 }
                 else if(data[0].verificationLink!=verifyLink)res.render("verifyResult",{type:"error",message:"Verification Link is not valid"})
                 else if (data[0].verified==false)res.render("verifyResult",{type:"error",message:"User already verified"})
