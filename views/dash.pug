@@ -71,6 +71,14 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-info
                                             input.form-control#title(type="text",placeholder="title of book",required)
                                         div.form-group
                                             input.form-control#author(type="text",placeholder="book author(s)",required)
+                                        .form-group
+                                            input.form-control#type(type="text",placeholder="type",required)
+                                        .form-group
+                                            input.form-control#volume(type="text",placeholder="volume")
+                                        .form-group
+                                            input.form-control#issue(type="text",placeholder="issue")
+                                        .form-group
+                                            input.form-control#pages(type="text",placeholder="pages")
                                         div.form-group
                                             input.form-control#journal(type="text",placeholder="journal")
                                         div.form-group
@@ -103,8 +111,16 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-info
                                             input.form-control#Edittitle(type="text",placeholder="title of book",required)
                                         div.form-group
                                             input.form-control#Editauthor(type="text",placeholder="book author(s)",required)
+                                        .form-group
+                                            input.form-control#Edittype(type="text",placeholder="type",required)
+                                        .form-group
+                                            input.form-control#Editvolume(type="text",placeholder="volume")
+                                        .form-group
+                                            input.form-control#Editissue(type="text",placeholder="issue")
+                                        .form-group
+                                            input.form-control#Editpages(type="text",placeholder="pages")
                                         div.form-group
-                                            input.form-control#Editjournal(type="text",placeholder="journal",required)
+                                            input.form-control#Editjournal(type="text",placeholder="journal")
                                         div.form-group
                                             input.form-control#Editdoi(type="text",placeholder="DOI (if any)")
                                         div.form-group
@@ -207,8 +223,12 @@ if type=="success"
             var title=$("#title").val()
             var publicationYear=$("#publicationYear").val()
             var abstract=$("#abstract").val()
+            var volume=$("#volume").val()
+            var issue=$("#issue").val()
+            var type=$("#type").val()
+            var pages=$("#pages").val()
 
-            $.post(`/addBook/${$("#appname").val()}/${$("#appBoken").val()}`,{author:author,doi:doi,directLink:directLink,journal:journal,publisher:publisher,title:title,publicationYear:publicationYear,abstract:abstract},(r)=>{
+            $.post(`/addBook/${$("#appname").val()}/${$("#appBoken").val()}`,{author:author,doi:doi,directLink:directLink,volume:volume,issue:issue,type:type,pages:pages,journal:journal,publisher:publisher,title:title,publicationYear:publicationYear,abstract:abstract},(r)=>{
                 if(r.type=="success") {
                     $("#bookId").val(r.bookId)
                     noty("top","right",r.message,2000,"success")
