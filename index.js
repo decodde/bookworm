@@ -189,6 +189,7 @@ app.post("/addBook/:appName/:bokenId",(req,res)=>{
             book.dateCreated=dateCreated.toUTCString()
             book.bookId=bookId
             Books.insertMany(book)
+            console.log(`Added ${book.title} for ${appName}`)
             res.json({type:"success",message:"Book Added Successfully",bookId:bookId})
         }
     })
@@ -204,9 +205,8 @@ app.post("/updateBook/:appName/:bokenId/:bookId",(req,res)=>{
             Books.findOne({appName:appName,appBoken:bokenId,bookId:bookId},(err,data)=>{
                 if(data==null) res.json({type:"error",message:"Book does not exist"})
                 else{
-                    
                     Books.findOneAndUpdate({appName:appName,appBoken:bokenId,bookId:bookId},bookDetails,{new:true},(err,data)=>{
-                        console.log(data)
+                        console.log(`Updated ${bookId} for ${appName}`)
                     })
                     res.json({type:"success",message:"Updated Book Successfully"})
                 }
